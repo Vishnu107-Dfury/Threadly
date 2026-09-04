@@ -1,6 +1,28 @@
-node_modules
+# Dependencies
+node_modules/
+.npm
+
+# Build outputs
+dist/
+build/
+
+# Environment variables - NEVER commit these
 .env
 .env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
 .DS_Store
-dist
-build
+Thumbs.db
+
+# IDE files
+.vscode/settings.json
+.idea/
+
+# Firebase service account key (if saved as a file)
+serviceAccountKey.json
