@@ -8,15 +8,15 @@ const ratioSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: true
+    default: 'Default Ratio Rule'
   },
   ratioLevel: {
-    type: [String],
-    required: true
+    type: String,
+    default: 'Brick'
   },
   groupKey: {
     type: String,
-    required: true
+    default: 'Brick'
   },
   groupValues: {
     type: [String],
@@ -24,17 +24,24 @@ const ratioSchema = new mongoose.Schema({
   },
   gradeRatios: {
     type: mongoose.Schema.Types.Mixed,
-    required: true
-    /* 
-    Example structure:
-    {
-      "A": { "4-5Y": 1, "5-6Y": 2 },
-      "B": { "4-5Y": 2, "5-6Y": 2 }
-    }
-    */
-  }
+    default: {}
+  },
+  // Exact assignment format representation
+  ratioData: [{
+    title: String,
+    attribute_data: [{
+      key: String,
+      value: String
+    }],
+    size: [{
+      size: String,
+      value: Number
+    }],
+    grade: String
+  }]
 }, {
-  timestamps: true
+  timestamps: true,
+  strict: false
 });
 
 const Ratio = mongoose.model('Ratio', ratioSchema);

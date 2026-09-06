@@ -28,24 +28,26 @@ const getRatioById = async (req, res) => {
   }
 };
 
-// @desc    Create new ratio
+// @desc    Create or upsert ratio configuration
 // @route   POST /api/ratios
 // @access  Private
 const createRatio = async (req, res) => {
   try {
-    const { name, ratioLevel, groupKey, groupValues, gradeRatios } = req.body;
+    const { name, ratioLevel, groupKey, groupValues, gradeRatios, ratioData } = req.body;
     
     const ratio = await Ratio.create({
       userId: req.user.firebaseUid,
-      name,
-      ratioLevel,
-      groupKey,
-      groupValues,
-      gradeRatios
+      name: name || `Ratio Plan - ${new Date().toLocaleDateString()}`,
+      ratioLevel: ratioLevel || 'Brick',
+      groupKey: groupKey || 'Brick',
+      groupValues: groupValues || [],
+      gradeRatios: gradeRatios || {},
+      ratioData: ratioData || []
     });
 
     res.status(201).json(ratio);
   } catch (error) {
+    console.error('createRatio error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -55,7 +57,7 @@ const createRatio = async (req, res) => {
 // @access  Private
 const updateRatio = async (req, res) => {
   try {
-    const { name, ratioLevel, groupKey, groupValues, gradeRatios } = req.body;
+    const { name, ratioLevel, groupKey, groupValues, gradeRatios, ratioData } = req.body;
     
     const ratio = await Ratio.findOne({ _id: req.params.id, userId: req.user.firebaseUid });
     
@@ -65,6 +67,7 @@ const updateRatio = async (req, res) => {
       ratio.groupKey = groupKey || ratio.groupKey;
       ratio.groupValues = groupValues || ratio.groupValues;
       ratio.gradeRatios = gradeRatios || ratio.gradeRatios;
+      if (ratioData) ratio.ratioData = ratioData;
       
       const updatedRatio = await ratio.save();
       res.json(updatedRatio);

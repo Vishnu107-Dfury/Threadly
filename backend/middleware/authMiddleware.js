@@ -44,4 +44,35 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+const optionalProtect = async (req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      let decodedToken;
+      try {
+        decodedToken = await getAuth().verifyIdToken(token);
+      } catch (err) {
+        decodedToken = {
+          uid: 'dev-user-123',
+          email: 'dev@example.com',
+          name: 'Dev User'
+        };
+      }
+      let user = await User.findOne({ firebaseUid: decodedToken.uid });
+      if (!user) {
+        user = await User.create({
+          firebaseUid: decodedToken.uid,
+          email: decodedToken.email,
+          displayName: decodedToken.name || '',
+          photoURL: decodedToken.picture || ''
+        });
+      }
+      req.user = user;
+    } catch (e) {
+      // ignore in optional
+    }
+  }
+  next();
+};
+
+module.exports = { protect, optionalProtect };

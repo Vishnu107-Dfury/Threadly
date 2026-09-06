@@ -1,62 +1,89 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import useAuthStore from './store/authStore';
 import useThemeStore from './store/themeStore';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
-// Layouts & Pages
+// Layout & Pages
 import Layout from './components/layout/Layout';
 import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
+import HomePage from './pages/HomePage';
 import CataloguePage from './pages/CataloguePage';
 import CartPage from './pages/CartPage';
 import RatioPage from './pages/RatioPage';
-
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuthStore();
-  
-  if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
-  if (!user) return <Navigate to="/login" replace />;
-  
-  return children;
-};
+import AccountPage from './pages/AccountPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const initializeAuth = useAuthStore((state) => state.initialize);
-  const theme = useThemeStore((state) => state.theme);
+  const initTheme = useThemeStore((state) => state.initTheme);
 
   useEffect(() => {
     initializeAuth();
-  }, [initializeAuth]);
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove('light', 'dark');
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.add(theme);
-    }
-  }, [theme]);
+    initTheme();
+  }, [initializeAuth, initTheme]);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        
-        <Route path="/" element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<DashboardPage />} />
-          <Route path="catalogue" element={<CataloguePage />} />
-          <Route path="cart" element={<CartPage />} />
-          <Route path="ratios" element={<RatioPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Routes>
+          {/* Authentication Page */}
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* Commerce & Merchandising Pages with Shared Liquid Glass Layout */}
+          <Route
+            path="/"
+            element={
+              <Layout>
+                <HomePage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/catalogue"
+            element={
+              <Layout>
+                <CataloguePage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/cart"
+            element={
+              <Layout>
+                <CartPage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/ratios"
+            element={
+              <Layout>
+                <RatioPage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <Layout>
+                <AccountPage />
+              </Layout>
+            }
+          />
+
+          {/* 404 Fallback */}
+          <Route
+            path="*"
+            element={
+              <Layout>
+                <NotFoundPage />
+              </Layout>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

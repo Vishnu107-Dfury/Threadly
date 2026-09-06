@@ -11,9 +11,7 @@ const { errorHandler } = require('./middleware/errorMiddleware');
 
 const app = express();
 
-// Middleware
-app.use(helmet());
-// CORS Configuration
+// Allowed origins
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
@@ -21,14 +19,15 @@ const allowedOrigins = [
   ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map((s) => s.trim()) : [])
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     const isAllowed =
       allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app') ||
-      origin.endsWith('.phynex.in') ||
-      origin.includes('localhost');
+      allowedOrigins.some((ao) => origin.startsWith(ao)) ||
+      /\.vercel\.app$/.test(origin) ||
+      /\.phynex\.in$/.test(origin) ||
+      /localhost/.test(origin);
 
     if (isAllowed) {
       callback(null, true);
@@ -38,8 +37,19 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+  optionsSuccessStatus: 200
+};
+
+// CORS Configuration (must be before helmet & rate limiter)
+app.use(cors(corsOptions));
+
+// Helmet Security Headers
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
+
 app.use(express.json());
 
 // Rate Limiting

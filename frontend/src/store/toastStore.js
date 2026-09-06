@@ -1,0 +1,29 @@
+import { create } from 'zustand';
+
+export const useToastStore = create((set) => ({
+  toasts: [],
+  addToast: (message, type = 'success', duration = 3200) => {
+    const id = Date.now() + Math.random().toString(36).substring(2, 6);
+    set((state) => ({
+      toasts: [...state.toasts, { id, message, type }]
+    }));
+    if (duration > 0) {
+      setTimeout(() => {
+        set((state) => ({
+          toasts: state.toasts.filter((t) => t.id !== id)
+        }));
+      }, duration);
+    }
+  },
+  removeToast: (id) => {
+    set((state) => ({
+      toasts: state.toasts.filter((t) => t.id !== id)
+    }));
+  }
+}));
+
+export const toast = {
+  success: (msg, duration) => useToastStore.getState().addToast(msg, 'success', duration),
+  error: (msg, duration) => useToastStore.getState().addToast(msg, 'error', duration),
+  info: (msg, duration) => useToastStore.getState().addToast(msg, 'info', duration),
+};

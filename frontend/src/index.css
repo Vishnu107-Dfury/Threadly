@@ -2,155 +2,288 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== CSS VARIABLES / DESIGN TOKENS ===== */
+/* ===== ROOT TOKENS & LIQUID GLASS SYSTEM ===== */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --surface: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.72);
-  --border: rgba(226, 232, 240, 0.8);
-  --muted: #64748b;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
+  /* Strict 2-accent + neutral scale */
+  --brand-primary: #4338CA;        /* Deep Indigo-Violet */
+  --brand-primary-hover: #3730A3;
+  --brand-primary-light: #EEF2FF;
+  --brand-primary-subtle: #E0E7FF;
+
+  --brand-accent: #F97316;         /* Warm Coral - High Priority Actions Only */
+  --brand-accent-hover: #EA580C;
+  --brand-accent-light: #FFF7ED;
+
+  /* Neutrals */
+  --bg-base: #F8FAFC;              /* Clean crisp base layer (Slate 50) */
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #F1F5F9;
+  --text-main: #0F172A;            /* Slate 900 */
+  --text-muted: #64748B;           /* Slate 500 */
+  --text-light: #94A3B8;           /* Slate 400 */
+  --border-subtle: #E2E8F0;        /* Slate 200 */
+
+  /* Liquid Glass values (Light Mode) */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+  --glass-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
 }
 
 .dark {
-  --background: #0d1117;
-  --foreground: #f1f5f9;
-  --surface: #161b22;
-  --surface-glass: rgba(22, 27, 34, 0.72);
-  --border: rgba(51, 65, 85, 0.8);
-  --muted: #94a3b8;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
+  --bg-base: #0B0F19;              /* Deep Slate / Near-Black */
+  --bg-surface: #111827;           /* Slate 900 */
+  --bg-surface-elevated: #1E293B;  /* Slate 800 */
+  --text-main: #F8FAFC;            /* Slate 50 */
+  --text-muted: #94A3B8;           /* Slate 400 */
+  --text-light: #64748B;           /* Slate 500 */
+  --border-subtle: #1E293B;        /* Slate 800 */
+
+  /* Liquid Glass values (Dark Mode) */
+  --glass-bg: rgba(15, 23, 42, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 14px 40px -5px rgba(0, 0, 0, 0.5);
 }
 
-/* ===== BASE ===== */
+/* ===== BASE STYLES ===== */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ===== LIQUID GLASS COMPONENTS ===== */
-.glass-panel {
-  background: var(--surface-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(255,255,255,0.05) inset;
-  border-radius: 0.75rem;
+/* ===== LIQUID GLASS SPECIFICATION =====
+   Strict Rule: Used ONLY on sticky navbar, cart drawer, modals, and floating action buttons.
+*/
+
+/* 1. Sticky Navigation Bar */
+.liquid-glass-nav {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--glass-specular), var(--glass-shadow);
+  transition: backdrop-filter 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.glass-card {
-  background: var(--surface-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  border-radius: 0.5rem;
+.liquid-glass-nav.scrolled {
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: var(--glass-specular), 0 12px 36px -4px rgba(15, 23, 42, 0.12);
 }
 
-/* ===== BUTTONS ===== */
+/* 2. Modals (Input Ratio, Quick View, Order Summary) */
+.liquid-glass-modal {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.5rem; /* 24px */
+  box-shadow: var(--glass-specular), 0 25px 60px -15px rgba(15, 23, 42, 0.3);
+}
+
+/* 3. Sliding Drawers (Cart Drawer) */
+.liquid-glass-drawer {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  border-left: 1px solid var(--glass-border);
+  box-shadow: var(--glass-specular), -15px 0 45px -10px rgba(15, 23, 42, 0.25);
+}
+
+/* 4. Floating Action Buttons (FAB) */
+.liquid-glass-fab {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-specular), 0 8px 24px -4px rgba(15, 23, 42, 0.15);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.liquid-glass-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-specular), 0 12px 30px -4px rgba(15, 23, 42, 0.22);
+}
+
+/* ===== HIGH-CONTRAST BASE LAYER CARDS (CRISP & FLAT, NOT GLASS) ===== */
+.product-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+  border-color: rgba(67, 56, 202, 0.3);
+}
+
+/* ===== BUTTON SYSTEM ===== */
+/* Primary Brand Button (Deep Indigo-Violet) */
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  border-radius: 0.5rem;
-  font-weight: 500;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background-color: var(--brand-primary);
+  color: #FFFFFF;
+  border-radius: 0.75rem;
+  font-weight: 600;
   font-size: 0.875rem;
-  line-height: 1.25rem;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  text-decoration: none;
-  transition: opacity 0.15s ease, transform 0.1s ease;
-  white-space: nowrap;
+  transition: background-color 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
 }
 
-.btn-primary:hover { opacity: 0.88; }
-.btn-primary:active { transform: scale(0.98); }
-.btn-primary:disabled { opacity: 0.5; pointer-events: none; }
+.btn-primary:hover {
+  background-color: var(--brand-primary-hover);
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);
+  transform: translateY(-1px);
+}
 
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* High Priority Accent Button (Warm Coral: Add to Cart, Place Order, Set Ratio ONLY) */
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background-color: var(--brand-accent);
+  color: #FFFFFF;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
+}
+
+.btn-accent:hover {
+  background-color: var(--brand-accent-hover);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-accent:active {
+  transform: translateY(0);
+}
+
+/* Secondary Button (Neutral border) */
 .btn-secondary {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--surface);
-  color: var(--foreground);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
   font-weight: 500;
   font-size: 0.875rem;
-  line-height: 1.25rem;
   cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.15s ease, transform 0.1s ease;
-  white-space: nowrap;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 
-.btn-secondary:hover { background-color: var(--surface-glass); }
-.btn-secondary:active { transform: scale(0.98); }
-.btn-secondary:disabled { opacity: 0.5; pointer-events: none; }
+.btn-secondary:hover {
+  background-color: var(--bg-surface-elevated);
+  border-color: var(--text-muted);
+}
+
+/* ===== GRADE PILLS (Tints of Primary Indigo, Accent Coral, Neutrals) ===== */
+.grade-pill-A {
+  background-color: #EEF2FF;
+  color: #4338CA;
+  border: 1px solid #C7D2FE;
+}
+.dark .grade-pill-A {
+  background-color: rgba(67, 56, 202, 0.2);
+  color: #A5B4FC;
+  border: 1px solid rgba(67, 56, 202, 0.4);
+}
+
+.grade-pill-B {
+  background-color: #FFF7ED;
+  color: #C2410C;
+  border: 1px solid #FED7AA;
+}
+.dark .grade-pill-B {
+  background-color: rgba(249, 115, 22, 0.2);
+  color: #FDBA74;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.grade-pill-C {
+  background-color: #F1F5F9;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+}
+.dark .grade-pill-C {
+  background-color: rgba(148, 163, 184, 0.15);
+  color: #E2E8F0;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.grade-pill-D {
+  background-color: #F8FAFC;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+}
+.dark .grade-pill-D {
+  background-color: rgba(100, 116, 139, 0.15);
+  color: #94A3B8;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
 
 /* ===== INPUTS ===== */
-.input-field {
+.form-input {
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  color: var(--foreground);
+  padding: 0.625rem 0.875rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.625rem;
+  color: var(--text-main);
   font-size: 0.875rem;
-  line-height: 1.25rem;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
   outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.input-field:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+.form-input:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.2);
 }
 
-.input-field::placeholder {
-  color: var(--muted);
-}
-
-/* ===== UTILITIES ===== */
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Material Symbols font weight */
-.material-symbols-rounded {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-  user-select: none;
-  line-height: 1;
-}
-
-/* Scrollbar styling */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { 
-  background: var(--border); 
-  border-radius: 3px;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
