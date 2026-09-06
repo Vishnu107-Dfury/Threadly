@@ -3,6 +3,7 @@ import { useCartStore } from '../../store/cartStore';
 import { useWishlistStore } from '../../store/wishlistStore';
 import { GRADE_CONFIG, GRADES } from '../../constants/grades';
 import { X, ShoppingBag, Heart, Star, Package, Truck, ShieldCheck, ChevronRight } from 'lucide-react';
+import api from '../../services/api';
 
 // Dummy data for Amazon-like features
 const DUMMY_COLORS = [
@@ -22,7 +23,7 @@ export default function ProductDetailModal() {
   const { toggleWishlist, isWishlisted } = useWishlistStore();
 
   const [selectedImage, setSelectedImage] = useState('');
-  const [purchaseMode, setPurchaseMode] = useState('retail'); // 'retail' or 'wholesale'
+  const [purchaseMode, setPurchaseMode] = useState('retail');
   
   // Retail State
   const [selectedColor, setSelectedColor] = useState(DUMMY_COLORS[0]);
@@ -35,7 +36,10 @@ export default function ProductDetailModal() {
   const [setsCount, setSetsCount] = useState(1);
   
   const [addedSuccess, setAddedSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState('details'); // 'details' or 'reviews'
+  const [activeTab, setActiveTab] = useState('details');
+  
+  // Related Products
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   useEffect(() => {
     if (quickViewProduct) {
@@ -52,7 +56,21 @@ export default function ProductDetailModal() {
       );
       setAddedSuccess(false);
       setActiveTab('details');
-      setPurchaseMode('retail'); // Default to retail for the amazon-like experience
+      setPurchaseMode('retail');
+      setRelatedProducts([]);
+
+      // Fetch real related products by brick/category
+      const brick = quickViewProduct.brick || quickViewProduct.category;
+      if (brick) {
+        api.get(`/products?brick=${encodeURIComponent(brick)}&limit=8`)
+          .then(res => {
+            const products = (res.data.products || []).filter(
+              pr => (pr._id || pr.style_code) !== (quickViewProduct._id || quickViewProduct.style_code)
+            );
+            setRelatedProducts(products.slice(0, 6));
+          })
+          .catch(() => {});
+      }
     }
   }, [quickViewProduct]);
 
@@ -497,26 +515,42 @@ export default function ProductDetailModal() {
               )}
             </div>
 
-            {/* Related Products Carousel (Mock) */}
-            <div className="p-4 sm:p-8 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-200 dark:border-slate-800">
-              <h3 className="text-lg font-bold mb-4">Frequently bought together</h3>
-              <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="w-36 shrink-0 space-y-2 group cursor-pointer">
-                    <div className="aspect-[3/4] rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-800">
-                      <img src={`https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80&auto=format&fit=crop&sig=${i}`} alt="Related" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                    </div>
-                    <div>
-                      <p className="text-brand-primary text-xs font-bold hover:underline">Threadly Essentials</p>
-                      <p className="text-sm font-bold">₹{(1499 + i * 200).toLocaleString()}</p>
-                      <div className="flex">
-                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" /><Star className="w-3 h-3 fill-amber-400 text-amber-400" /><Star className="w-3 h-3 fill-amber-400 text-amber-400" /><Star className="w-3 h-3 fill-amber-400 text-amber-400" /><Star className="w-3 h-3 fill-slate-300 text-slate-300" />
+            {/* Related Products Carousel — Real data */}
+            {relatedProducts.length > 0 && (
+              <div className="p-4 sm:p-8 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-200 dark:border-slate-800">
+                <h3 className="text-lg font-bold mb-4">Frequently Bought Together</h3>
+                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                  {relatedProducts.map((rp) => (
+                    <button
+                      key={rp._id || rp.style_code}
+                      onClick={() => setQuickViewProduct(rp)}
+                      className="w-36 sm:w-40 shrink-0 space-y-2 group text-left transition-all"
+                    >
+                      <div className="aspect-[3/4] rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                        <img
+                          src={rp.image}
+                          alt={rp.title}
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80';
+                          }}
+                        />
                       </div>
-                    </div>
-                  </div>
-                ))}
+                      <div className="space-y-0.5">
+                        <p className="text-[11px] font-semibold text-brand-primary group-hover:underline leading-tight line-clamp-2">{rp.title}</p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-slate-100">₹{(rp.mrp || rp.price || 1499).toLocaleString('en-IN')}</p>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, idx) => (
+                            <Star key={idx} className={`w-2.5 h-2.5 ${idx < Math.floor(rp.rating || 4) ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700'}`} />
+                          ))}
+                          <span className="text-[10px] text-slate-400 ml-1">{rp.rating || 4.2}</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
           </div>
         </div>
