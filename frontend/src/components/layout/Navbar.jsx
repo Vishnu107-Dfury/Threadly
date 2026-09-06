@@ -5,6 +5,7 @@ import { useCartStore } from '../../store/cartStore';
 import { useWishlistStore } from '../../store/wishlistStore';
 import useAuthStore from '../../store/authStore';
 import useThemeStore from '../../store/themeStore';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
   ShoppingBag,
@@ -36,7 +37,6 @@ export default function Navbar() {
   const totalCartCount = items.reduce((acc, i) => acc + i.sets, 0);
   const wishlistCount = wishlistItems.length;
 
-  // Close menus on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setSearchOpenMobile(false);
@@ -70,9 +70,9 @@ export default function Navbar() {
         scrolled ? 'scrolled py-2' : 'py-3'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-3">
         {/* Brand Wordmark */}
-        <Link to="/" className="flex items-center gap-2 group transition-transform active:scale-95 shrink-0">
+        <Link to="/" className="flex items-center group transition-transform active:scale-95 shrink-0">
           <Wordmark size="default" />
         </Link>
 
@@ -135,12 +135,12 @@ export default function Navbar() {
           )}
         </form>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-1.5">
+        {/* Action Controls - Fixed Single Line on Mobile */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto">
           {/* Mobile Search Toggle */}
           <button
             onClick={() => { setSearchOpenMobile(!searchOpenMobile); setMobileMenuOpen(false); }}
-            className="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="md:hidden p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
             aria-label="Toggle Search"
           >
             <Search className="w-4.5 h-4.5" />
@@ -149,7 +149,7 @@ export default function Navbar() {
           {/* Theme Toggle — hidden on xs, visible sm+ */}
           <button
             onClick={toggleTheme}
-            className="hidden sm:flex p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="hidden sm:flex p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
             aria-label="Toggle Color Theme"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -158,7 +158,7 @@ export default function Navbar() {
           {/* Wishlist — hidden on mobile, show sm+ */}
           <Link
             to="/catalogue?wishlist=true"
-            className="relative hidden sm:flex p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="relative hidden sm:flex p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
             aria-label="Wishlist"
           >
             <Heart className="w-4 h-4" />
@@ -170,9 +170,11 @@ export default function Navbar() {
           </Link>
 
           {/* Cart Button */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={openCartDrawer}
-            className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-brand-primary dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200/60 dark:border-indigo-800/60 text-sm font-semibold transition-all active:scale-95"
+            className="relative flex items-center gap-1.5 px-2 py-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-brand-primary dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200/60 dark:border-indigo-800/60 text-sm font-semibold transition-all shrink-0"
             aria-label="View Cart"
           >
             <ShoppingBag className="w-4 h-4" />
@@ -182,10 +184,10 @@ export default function Navbar() {
                 {totalCartCount}
               </span>
             )}
-          </button>
+          </motion.button>
 
-          {/* User Account Dropdown */}
-          <div className="relative">
+          {/* User Account / Sign In */}
+          <div className="relative shrink-0 flex items-center">
             {user ? (
               <button
                 onClick={() => { setUserMenuOpen(!userMenuOpen); setMobileMenuOpen(false); }}
@@ -198,131 +200,153 @@ export default function Navbar() {
             ) : (
               <Link
                 to="/login"
-                className="btn-primary text-xs py-1.5 px-3"
+                className="btn-primary text-[11px] sm:text-xs py-1.5 px-2 sm:px-3 ml-1"
               >
                 Sign In
               </Link>
             )}
 
-            {user && userMenuOpen && (
-              <div
-                className="absolute right-0 mt-2 w-52 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50"
-                onMouseLeave={() => setUserMenuOpen(false)}
-              >
-                <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
-                  <p className="text-xs text-slate-400">Signed in as</p>
-                  <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">{user.email}</p>
-                </div>
-                <Link
-                  to="/account"
-                  onClick={() => setUserMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+            <AnimatePresence>
+              {user && userMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 top-10 mt-2 w-52 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50"
+                  onMouseLeave={() => setUserMenuOpen(false)}
                 >
-                  <User className="w-3.5 h-3.5 text-slate-400" />
-                  Account & Profile
-                </Link>
-                <Link
-                  to="/ratios"
-                  onClick={() => setUserMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
-                >
-                  <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
-                  Saved Ratios
-                </Link>
-                <button
-                  onClick={() => { setUserMenuOpen(false); logout(); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-brand-accent hover:bg-orange-50 dark:hover:bg-orange-950/30 text-left border-t border-slate-100 dark:border-slate-800 mt-1"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  Sign Out
-                </button>
-              </div>
-            )}
+                  <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
+                    <p className="text-xs text-slate-400">Signed in as</p>
+                    <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">{user.email}</p>
+                  </div>
+                  <Link
+                    to="/account"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                  >
+                    <User className="w-3.5 h-3.5 text-slate-400" />
+                    Account & Profile
+                  </Link>
+                  <Link
+                    to="/ratios"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                  >
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+                    Saved Ratios
+                  </Link>
+                  <button
+                    onClick={() => { setUserMenuOpen(false); logout(); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-brand-accent hover:bg-orange-50 dark:hover:bg-orange-950/30 text-left border-t border-slate-100 dark:border-slate-800 mt-1"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Sign Out
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => { setMobileMenuOpen(!mobileMenuOpen); setSearchOpenMobile(false); setUserMenuOpen(false); }}
-            className="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="md:hidden p-1.5 ml-1 border border-transparent rounded-lg text-slate-600 dark:text-slate-300 focus:border-slate-200 dark:focus:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
             aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <motion.div animate={{ rotate: mobileMenuOpen ? 90 : 0 }}>
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </motion.div>
           </button>
         </div>
       </div>
 
-      {/* Mobile Search Bar */}
-      {searchOpenMobile && (
-        <div className="md:hidden px-4 pt-2 pb-3 border-t border-slate-200/50 dark:border-slate-800">
-          <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-            <Search className="w-4 h-4 absolute left-3 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search styles, categories, bricks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-10 py-2.5 text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-primary"
-              autoFocus
-            />
-            {searchQuery && (
-              <button type="button" onClick={() => setSearchQuery('')} className="absolute right-3 text-slate-400">
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </form>
-        </div>
-      )}
+      {/* Mobile Search Bar - Animated */}
+      <AnimatePresence>
+        {searchOpenMobile && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden overflow-hidden px-4 pt-2 pb-3 border-t border-slate-200/50 dark:border-slate-800"
+          >
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+              <Search className="w-4 h-4 absolute left-3 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search styles, categories, bricks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-10 py-2.5 text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                autoFocus
+              />
+              {searchQuery && (
+                <button type="button" onClick={() => setSearchQuery('')} className="absolute right-3 text-slate-400">
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Mobile Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200/50 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md">
-          <nav className="px-4 py-3 flex flex-col gap-1">
-            <Link
-              to="/"
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive('/') ? 'text-brand-primary bg-indigo-50 dark:bg-indigo-950/40' : 'text-slate-700 dark:text-slate-300'
-              }`}
-            >
-              Home
-            </Link>
-            <Link
-              to="/catalogue"
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive('/catalogue') ? 'text-brand-primary bg-indigo-50 dark:bg-indigo-950/40' : 'text-slate-700 dark:text-slate-300'
-              }`}
-            >
-              Catalogue
-            </Link>
-            <Link
-              to="/ratios"
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive('/ratios') ? 'text-brand-primary bg-indigo-50 dark:bg-indigo-950/40' : 'text-slate-700 dark:text-slate-300'
-              }`}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              Ratio Planner
-            </Link>
-            <Link
-              to="/catalogue?wishlist=true"
-              className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors"
-            >
-              <Heart className="w-4 h-4" />
-              Wishlist {wishlistCount > 0 && <span className="ml-auto text-xs bg-brand-primary text-white rounded-full px-1.5 py-0.5">{wishlistCount}</span>}
-            </Link>
-            <div className="flex items-center justify-between px-3 py-2.5">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
-              </span>
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+      {/* Mobile Navigation Drawer - Animated */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden absolute w-full border-t border-slate-200/50 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md shadow-xl"
+          >
+            <nav className="px-4 py-3 flex flex-col gap-1">
+              <Link
+                to="/"
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive('/') ? 'text-brand-primary bg-indigo-50 dark:bg-indigo-950/40' : 'text-slate-700 dark:text-slate-300'
+                }`}
               >
-                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </button>
-            </div>
-          </nav>
-        </div>
-      )}
+                Home
+              </Link>
+              <Link
+                to="/catalogue"
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive('/catalogue') ? 'text-brand-primary bg-indigo-50 dark:bg-indigo-950/40' : 'text-slate-700 dark:text-slate-300'
+                }`}
+              >
+                Catalogue
+              </Link>
+              <Link
+                to="/ratios"
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive('/ratios') ? 'text-brand-primary bg-indigo-50 dark:bg-indigo-950/40' : 'text-slate-700 dark:text-slate-300'
+                }`}
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                Ratio Planner
+              </Link>
+              <Link
+                to="/catalogue?wishlist=true"
+                className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors"
+              >
+                <Heart className="w-4 h-4" />
+                Wishlist {wishlistCount > 0 && <span className="ml-auto text-xs bg-brand-primary text-white rounded-full px-1.5 py-0.5">{wishlistCount}</span>}
+              </Link>
+              <div className="flex items-center justify-between px-3 py-2.5 mt-2 border-t border-slate-100 dark:border-slate-800">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                </span>
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+                >
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </button>
+              </div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
