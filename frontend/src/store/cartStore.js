@@ -64,12 +64,16 @@ export const useCartStore = create((set, get) => ({
   },
 
   /**
-   * Add a product to the cart with Grade and Sets
+   * Add a product to the cart with Grade and Sets (or individual size/color for retail)
    */
-  addToCart: (product, { grade = 'A', sets = 1, customRatios = null } = {}) => {
+  addToCart: (product, { grade = 'A', sets = 1, size = null, color = null, customRatios = null } = {}) => {
     const { items, appliedRatios, ratioLevel } = get();
     const productId = product._id || product.style_code;
-    const itemKey = `${productId}_${grade}`;
+    
+    // For retail items, append size and color to the itemKey to keep them distinct
+    const itemKey = size || color 
+      ? `${productId}_retail_${size || 'nosize'}_${color || 'nocolor'}` 
+      : `${productId}_${grade}`;
 
     const existingIndex = items.findIndex((i) => i.itemKey === itemKey);
 
@@ -80,11 +84,21 @@ export const useCartStore = create((set, get) => ({
     // Check if an existing ratio rule applies to this product's group
     let initialRatios = customRatios;
     if (!initialRatios) {
-      const groupKey = ratioLevel === 'Category' ? product.category : product.brick;
-      if (appliedRatios[groupKey]?.[grade]) {
-        initialRatios = { ...appliedRatios[groupKey][grade] };
+      if (size) {
+        // Retail order: exactly 1 of the chosen size
+        initialRatios = { [size]: 1 };
+        // Clear out other sizes to 0
+        sizes.forEach(s => {
+          if (s !== size) initialRatios[s] = 0;
+        });
       } else {
-        initialRatios = createDefaultSizeRatios(sizes, grade);
+        // Wholesale order
+        const groupKey = ratioLevel === 'Category' ? product.category : product.brick;
+        if (appliedRatios[groupKey]?.[grade]) {
+          initialRatios = { ...appliedRatios[groupKey][grade] };
+        } else {
+          initialRatios = createDefaultSizeRatios(sizes, grade);
+        }
       }
     }
 
@@ -103,14 +117,15 @@ export const useCartStore = create((set, get) => ({
         category: product.category,
         sleeve: product.sleeve || '',
         neck: product.neck || '',
-        color: product.color || 'Standard',
+        color: color || product.color || 'Standard',
         color_code: product.color_code || '#1E293B',
         mrp: product.mrp || product.price || 1999,
         image: product.image,
-        grade,
+        grade: size ? 'Retail' : grade, // Mark as retail if size selected
         sets,
         sizes,
         sizeRatios: initialRatios,
+        isRetail: !!size // Boolean flag for UI to differentiate
       };
       updatedItems = [...items, newItem];
     }
