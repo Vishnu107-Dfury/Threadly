@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
-const { resolveProductImages } = require('./services/imageService');
+const { resolveProductImages, resetImageTracker } = require('./services/imageService');
 
 function parseCSV(content) {
   const lines = content.split(/\r?\n/).filter(line => line.trim().length > 0);
@@ -213,6 +213,9 @@ async function seed() {
         });
       }
     });
+
+    // Reset image dedup tracker before building docs so primaries are unique
+    resetImageTracker();
 
     // Convert stylesMap to product documents
     const productDocs = [];
