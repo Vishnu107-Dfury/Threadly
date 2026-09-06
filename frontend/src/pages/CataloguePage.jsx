@@ -449,6 +449,12 @@ export default function CataloguePage() {
                   >
                     {/* Card Image */}
                     <div className="relative aspect-[3/4] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                      {/* Image is a button — tappable on mobile and clickable on desktop */}
+                      <button
+                        onClick={() => setQuickViewProduct(p)}
+                        className="absolute inset-0 w-full h-full z-10 focus:outline-none"
+                        aria-label={`View ${p.title}`}
+                      />
                       <img
                         src={p.image}
                         alt={p.title}
@@ -459,31 +465,28 @@ export default function CataloguePage() {
                         }}
                       />
 
-                      {/* Wishlist toggle */}
+                      {/* Wishlist toggle - above the image button overlay */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleWishlist(p);
                         }}
-                        className="absolute top-2.5 right-2.5 p-2 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 hover:text-brand-accent shadow-sm backdrop-blur-sm transition-all active:scale-90"
+                        className="absolute top-2.5 right-2.5 p-2 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 hover:text-brand-accent shadow-sm backdrop-blur-sm transition-all active:scale-90 z-20"
                         aria-label="Wishlist"
                       >
                         <Heart className={`w-4 h-4 ${wishlisted ? 'fill-brand-accent text-brand-accent' : ''}`} />
                       </button>
 
                       {/* Brick Category Badge */}
-                      <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-sm text-[10px] font-semibold text-white tracking-wide">
+                      <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-sm text-[10px] font-semibold text-white tracking-wide z-20">
                         {p.brick}
                       </div>
 
-                      {/* Quick-view hover button */}
-                      <div className="absolute inset-x-0 bottom-2 px-3 hidden group-hover:flex items-center gap-2 transition-all">
-                        <button
-                          onClick={() => setQuickViewProduct(p)}
-                          className="w-full py-1.5 rounded-lg bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 text-xs font-semibold shadow-md flex items-center justify-center gap-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                        >
+                      {/* Quick-view label — desktop hover only */}
+                      <div className="absolute inset-x-0 bottom-2 px-3 hidden group-hover:flex items-center gap-2 transition-all z-20">
+                        <div className="w-full py-1.5 rounded-lg bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 text-xs font-semibold shadow-md flex items-center justify-center gap-1.5">
                           <Eye className="w-3.5 h-3.5" /> Quick View
-                        </button>
+                        </div>
                       </div>
                     </div>
 

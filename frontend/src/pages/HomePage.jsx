@@ -329,6 +329,12 @@ export default function HomePage() {
                 >
                   {/* Card Image Area */}
                   <div className="relative aspect-[3/4] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                    {/* Transparent tap target covers the whole image */}
+                    <button
+                      onClick={() => setQuickViewProduct(p)}
+                      className="absolute inset-0 w-full h-full z-10 focus:outline-none"
+                      aria-label={`View ${p.title}`}
+                    />
                     <img
                       src={p.image}
                       alt={p.title}
@@ -347,7 +353,7 @@ export default function HomePage() {
                         e.stopPropagation();
                         toggleWishlist(p);
                       }}
-                      className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 p-1.5 sm:p-2 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 hover:text-brand-accent shadow-sm backdrop-blur-sm transition-all"
+                      className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 p-1.5 sm:p-2 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 hover:text-brand-accent shadow-sm backdrop-blur-sm transition-all z-20"
                       aria-label="Wishlist"
                     >
                       <Heart
@@ -356,18 +362,15 @@ export default function HomePage() {
                     </motion.button>
 
                     {/* Brick Badge */}
-                    <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-sm text-[9px] sm:text-[10px] font-semibold text-white tracking-wide">
+                    <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-sm text-[9px] sm:text-[10px] font-semibold text-white tracking-wide z-20">
                       {p.brick}
                     </div>
 
-                    {/* Quick View Button Hover Overlay */}
-                    <div className="absolute inset-x-0 bottom-2 px-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hidden md:flex items-center gap-2">
-                      <button
-                        onClick={() => setQuickViewProduct(p)}
-                        className="w-full py-2 rounded-lg bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 text-xs font-bold shadow-md flex items-center justify-center gap-1.5 hover:bg-brand-primary hover:text-white transition-colors"
-                      >
+                    {/* Quick View label — desktop hover only */}
+                    <div className="absolute inset-x-0 bottom-2 px-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hidden md:flex items-center gap-2 z-20">
+                      <div className="w-full py-2 rounded-lg bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 text-xs font-bold shadow-md flex items-center justify-center gap-1.5">
                         <Eye className="w-3.5 h-3.5" /> Quick View
-                      </button>
+                      </div>
                     </div>
                   </div>
 
