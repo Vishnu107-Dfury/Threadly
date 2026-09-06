@@ -82,9 +82,9 @@ export default function ProductDetailModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-white dark:bg-slate-900">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-white dark:bg-slate-900">
       {/* Main Full-Screen Container */}
-      <div className="relative z-10 w-full min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 animate-in fade-in zoom-in-95 duration-200 flex flex-col">
+      <div className="relative z-10 w-full min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 animate-in fade-in zoom-in-95 duration-200 flex flex-col pt-12 sm:pt-4">
         
         {/* Header / Close button */}
         <div className="absolute top-4 right-4 z-20">
