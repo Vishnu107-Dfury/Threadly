@@ -1,11 +1,9 @@
 import axios from 'axios';
 import { auth } from '../config/firebase';
 
-// Uses VITE_API_URL (local dev) or API_URL (Vercel env var without prefix)
-// Falls back to localhost for local development
-const BASE_URL = import.meta.env.VITE_API_URL 
-  || import.meta.env.API_URL 
-  || 'http://localhost:5000/api';
+// VITE_API_URL must be set in Vercel / hosting env vars pointing to your Render backend.
+// Only VITE_-prefixed vars are injected into the browser bundle by Vite.
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: BASE_URL,

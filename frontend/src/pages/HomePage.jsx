@@ -91,7 +91,7 @@ export default function HomePage() {
         {/* Subtle dark gradient overlay for text legibility */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/60 to-transparent flex items-center" />
 
-        <div className="relative z-10 max-w-2xl px-6 sm:px-12 text-white space-y-4">
+        <div className="relative z-10 h-full flex flex-col justify-center max-w-2xl px-6 sm:px-12 text-white space-y-4">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold tracking-wide border border-white/20">
             <Sparkles className="w-3.5 h-3.5 text-brand-accent" />
             Featured Merchandising
