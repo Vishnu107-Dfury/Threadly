@@ -62,6 +62,13 @@ body {
   font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Thematic Thread-Weave Background Pattern */
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%234338CA' stroke-width='0.8' stroke-opacity='0.06'%3E%3Cpath d='M0 40 Q20 0 40 40 T80 40'/%3E%3Cpath d='M0 40 Q20 80 40 40 T80 40'/%3E%3Cpath d='M40 0 Q80 20 40 40 T40 80'/%3E%3Cpath d='M40 0 Q0 20 40 40 T40 80'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+.dark body {
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='0.8' stroke-opacity='0.03'%3E%3Cpath d='M0 40 Q20 0 40 40 T80 40'/%3E%3Cpath d='M0 40 Q20 80 40 40 T80 40'/%3E%3Cpath d='M40 0 Q80 20 40 40 T40 80'/%3E%3Cpath d='M40 0 Q0 20 40 40 T40 80'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* ===== LIQUID GLASS SPECIFICATION =====
