@@ -15,7 +15,8 @@ import {
   Eye,
   ShieldCheck,
   TrendingUp,
-  Layers
+  Layers,
+  Star
 } from 'lucide-react';
 
 const HERO_SLIDES = [
