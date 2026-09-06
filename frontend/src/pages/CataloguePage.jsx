@@ -165,53 +165,57 @@ export default function CataloguePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6 pb-20">
       {/* 1. Header Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            {isWishlistOnly ? 'Your Wishlist' : 'Wholesale Catalogue'}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            {total} product styles available with dynamic grade curves
-          </p>
+      <div className="pt-2 space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">
+              {isWishlistOnly ? 'Your Wishlist' : 'Wholesale Catalogue'}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              {total} styles · dynamic grade curves
+            </p>
+          </div>
+
+          {/* Mobile Filter Toggle — top-right on mobile */}
+          <button
+            onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
+            className="lg:hidden btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 shrink-0"
+          >
+            <Filter className="w-3.5 h-3.5" />
+            Filters
+          </button>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        {/* Second row: Upload + Sort — always horizontal, wraps gracefully */}
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Upload Catalogue CTA */}
           <button
             onClick={() => setUploadModalOpen(true)}
-            className="btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 shadow-2xs"
+            className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 shadow-2xs"
           >
-            <UploadCloud className="w-4 h-4 text-brand-primary" />
-            <span>Upload Catalogue (.xlsx/.csv)</span>
+            <UploadCloud className="w-3.5 h-3.5 text-brand-primary" />
+            <span className="hidden xs:inline">Upload</span>
+            <span className="hidden sm:inline"> Catalogue</span>
           </button>
 
           {/* Sort Dropdown */}
           <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 text-xs shadow-2xs">
-            <span className="text-slate-400 font-medium">Sort:</span>
+            <span className="text-slate-400 font-medium hidden xs:inline">Sort:</span>
             <select
               value={sortBy}
               onChange={(e) => {
                 setSortBy(e.target.value);
                 setPage(1);
               }}
-              className="bg-transparent text-slate-800 dark:text-slate-200 font-semibold focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-800 dark:text-slate-200 font-semibold focus:outline-none cursor-pointer max-w-[130px] sm:max-w-none"
             >
               <option value="newest" className="bg-white dark:bg-slate-900">Newest</option>
-              <option value="price_asc" className="bg-white dark:bg-slate-900">Price: Low to High</option>
-              <option value="price_desc" className="bg-white dark:bg-slate-900">Price: High to Low</option>
+              <option value="price_asc" className="bg-white dark:bg-slate-900">Price ↑</option>
+              <option value="price_desc" className="bg-white dark:bg-slate-900">Price ↓</option>
               <option value="rating" className="bg-white dark:bg-slate-900">Top Rated</option>
-              <option value="title_asc" className="bg-white dark:bg-slate-900">Style Name (A-Z)</option>
+              <option value="title_asc" className="bg-white dark:bg-slate-900">A → Z</option>
             </select>
           </div>
-
-          {/* Mobile Filter Toggle */}
-          <button
-            onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-            className="lg:hidden btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
-          >
-            <Filter className="w-3.5 h-3.5" />
-            Filters
-          </button>
         </div>
       </div>
 
@@ -484,18 +488,21 @@ export default function CataloguePage() {
                     </div>
 
                     {/* Card Content */}
-                    <div className="p-3.5 space-y-2 flex-1 flex flex-col justify-between">
+                    <div className="p-2.5 sm:p-3.5 space-y-2 flex-1 flex flex-col justify-between">
                       <div>
-                        <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
-                          <span className="font-medium truncate">{p.brand || 'Threadly'}</span>
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
-                            Grade {p.grade || 'A'}
+                        {/* Grade badge on its own line to avoid overlap on 2-col mobile */}
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <span className="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                            {p.brand || 'Threadly'}
+                          </span>
+                          <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
+                            {p.grade || 'A'}
                           </span>
                         </div>
 
                         <h3
                           onClick={() => setQuickViewProduct(p)}
-                          className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-1 cursor-pointer hover:text-brand-primary transition-colors"
+                          className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors leading-snug"
                           title={p.title}
                         >
                           {p.title}
@@ -519,22 +526,21 @@ export default function CataloguePage() {
                         )}
                       </div>
 
-                      {/* Pricing & Add to Cart (Warm Coral) */}
-                      <div className="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
-                        <div>
-                          <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+                      {/* Pricing & Add to Cart */}
+                      <div className="pt-1.5 sm:pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 gap-1">
+                        <div className="min-w-0">
+                          <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100">
                             ₹{p.mrp?.toLocaleString('en-IN') || 1999}
                           </span>
-                          <span className="block text-[10px] text-slate-400">MRP / Unit</span>
+                          <span className="block text-[9px] sm:text-[10px] text-slate-400">MRP/Unit</span>
                         </div>
 
                         <button
                           onClick={() => addToCart(p, { grade: p.grade || 'A', sets: 1 })}
-                          className="btn-accent py-1.5 px-3 text-xs font-semibold"
+                          className="btn-accent py-1 px-2 sm:py-1.5 sm:px-3 text-xs font-semibold shrink-0"
                           aria-label="Add to cart"
                         >
-                          <ShoppingBag className="w-3.5 h-3.5 sm:mr-1" />
-                          <span className="hidden sm:inline">Add</span>
+                          <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                         </button>
                       </div>
                     </div>
